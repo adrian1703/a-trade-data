@@ -1,9 +1,7 @@
 import os
 import pickle
 import boto3
-from datetime import date, datetime
-
-
+from datetime import date, datetime, timedelta
 
 from botocore.config import Config
 
@@ -85,7 +83,7 @@ class PolygonS3Access:
     @staticmethod
     def key_is_within_given_years(key_to_check, years):
         date_to_check = PolygonS3Access.get_date_from_key(key_to_check)
-        today = date.today()
+        today = date.today() - timedelta(days=1)
         # Compute the threshold date
         try:
             threshold = today.replace(year=today.year - years)
@@ -96,7 +94,7 @@ class PolygonS3Access:
         return check_date >= threshold
 
     @staticmethod
-    def _fullfilename_to_key(filename: str, kind: str):
+    def _full_filename_to_key(filename: str, kind: str):
         filename = filename.split("/")[-1]
         year = filename.split("-")[0]
         month = filename.split("-")[1]
@@ -125,7 +123,7 @@ class PolygonS3Access:
     def _download_missing_agg(self, func_get_all_keys, kind: str, download_dir: str, dry_run: bool = False):
         known_keys = func_get_all_keys()
         present_files = [f for f in os.listdir(self._day_agg_dir) if f.endswith('.gz')]
-        present_keys = [self._fullfilename_to_key(f, kind=kind) for f in present_files]
+        present_keys = [self._full_filename_to_key(f, kind=kind) for f in present_files]
         missing_keys = list(set(known_keys) - set(present_keys))
         missing_keys.sort()
 
