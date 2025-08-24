@@ -12,6 +12,8 @@ from src.EnvConfig import EnvConfig
 
 class PolygonS3Access:
     __env_config: EnvConfig = EnvConfig()
+    _day_agg_kind = "day_aggs_v1"
+    _minute_agg_kind = "minute_aggs_v1"
 
     def __init__(self):
         self.__session = boto3.Session(
@@ -26,12 +28,11 @@ class PolygonS3Access:
         self.s3pages = []
         self.years_filter = 5
         self.data_dir = './../data/'
-        self._day_agg_dir = self.data_dir + "day_agg/"
-        self._minute_agg_dir = self.data_dir + "minute_aggs/"
+        self._day_agg_dir = self.data_dir + self._day_agg_kind + '/'
+        self._minute_agg_dir = self.data_dir + self._minute_agg_kind + '/'
         for dir_to_create in [self.data_dir, self._day_agg_dir, self._minute_agg_dir]:
             os.makedirs(dir_to_create, exist_ok=True)
 
-    # Serialize
     def save_data(self):
         with open('./cache/s3pages.pkl', 'wb') as f:
             pickle.dump(self.s3pages, f)
@@ -39,7 +40,7 @@ class PolygonS3Access:
     def load_data(self):
         with open('./cache/s3pages.pkl', 'rb') as f:
             self.s3pages = pickle.load(f)
-
+    
     def fetch_pages(self, prefix: str = 'us_stocks_sip'):
         paginator = self.__s3.get_paginator('list_objects_v2')
         for page in paginator.paginate(Bucket='flatfiles', Prefix=prefix):
@@ -50,6 +51,18 @@ class PolygonS3Access:
             for obj in page['Contents']:
                 print(obj['Key'])
 
+    def download_missing_day_agg(self, dry_run: bool = False):
+        self._download_missing_agg(self.get_day_agg_keys,
+                                   self._day_agg_kind,
+                                   self._day_agg_dir,
+                                   dry_run)
+
+    def download_missing_minute_agg(self, dry_run: bool = False):
+        self._download_missing_agg(self.get_minute_agg_keys,
+                                   self._minute_agg_kind,
+                                   self._minute_agg_dir,
+                                   dry_run)
+
     def download(self, object_key: str, directory: str = './'):
         if directory[-1] != '/':
             directory += '/'
@@ -58,10 +71,10 @@ class PolygonS3Access:
         self._download(object_key, local_file_path)
 
     def get_day_agg_keys(self):
-        return self._get_keys_of_kind("day_agg")
+        return self._get_keys_of_kind(self._day_agg_kind)
 
     def get_minute_agg_keys(self):
-        return self._get_keys_of_kind("minute_aggs")
+        return self._get_keys_of_kind(self._minute_agg_kind)
 
 
     @staticmethod
@@ -82,6 +95,13 @@ class PolygonS3Access:
         check_date = datetime.strptime(date_to_check, "%Y-%m-%d").date()
         return check_date >= threshold
 
+    @staticmethod
+    def _fullfilename_to_key(filename: str, kind: str):
+        filename = filename.split("/")[-1]
+        year = filename.split("-")[0]
+        month = filename.split("-")[1]
+        return f'us_stocks_sip/{kind}/{year}/{month}/{filename}'
+
     def _get_all_keys(self):
         all_keys = []
         for page in self.s3pages:
@@ -101,3 +121,15 @@ class PolygonS3Access:
         result = list(filter(filter_kind, result))
         result = list(filter(filter_5_years, result))
         return result
+
+    def _download_missing_agg(self, func_get_all_keys, kind: str, download_dir: str, dry_run: bool = False):
+        known_keys = func_get_all_keys()
+        present_files = [f for f in os.listdir(self._day_agg_dir) if f.endswith('.gz')]
+        present_keys = [self._fullfilename_to_key(f, kind=kind) for f in present_files]
+        missing_keys = list(set(known_keys) - set(present_keys))
+        missing_keys.sort()
+
+        for idx, agg in enumerate(missing_keys, 1):
+            print(f"Downloading entry {idx}/{len(missing_keys)}: {agg}")
+            if not dry_run:
+                self.download(agg, download_dir)
