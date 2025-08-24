@@ -1,3 +1,4 @@
+import os
 import pickle
 import boto3
 from datetime import date, datetime
@@ -24,6 +25,11 @@ class PolygonS3Access:
         )
         self.s3pages = []
         self.years_filter = 5
+        self.data_dir = './../data/'
+        self._day_agg_dir = self.data_dir + "day_agg/"
+        self._minute_agg_dir = self.data_dir + "minute_aggs/"
+        for dir_to_create in [self.data_dir, self._day_agg_dir, self._minute_agg_dir]:
+            os.makedirs(dir_to_create, exist_ok=True)
 
     # Serialize
     def save_data(self):
