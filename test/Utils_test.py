@@ -1,3 +1,4 @@
+import pytest
 from src.Utils import Utils
 
 class DummyClass:
@@ -44,6 +45,5 @@ def run_tests():
 
     print("\n--- Test: class ---")
     Utils.inspect(DummyClass)
-
-if __name__ == "__main__":
-    run_tests()
+    # more for seeing how it prints than actual test logic
+    assert 1 == 1

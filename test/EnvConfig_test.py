@@ -1,4 +1,6 @@
 import os
+import pytest
+
 
 from src.EnvConfig import EnvConfig
 
@@ -11,6 +13,6 @@ class EnvConfigTest(EnvConfig):
     def assert_test(self):
         assert self.test == "hello"
 
-env_config = EnvConfigTest()
-print("Test: " + env_config.test)
-env_config.assert_test()
+def test_get_date_from_key():
+    env_config = EnvConfigTest()
+    assert env_config.test == "hello"
