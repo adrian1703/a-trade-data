@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 
 from botocore.config import Config
 
-from src.EnvConfig import EnvConfig
+from helper.EnvConfig import EnvConfig
 
 
 class PolygonS3Access:

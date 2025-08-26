@@ -1,6 +1,8 @@
 import pytest
 from datetime import date, timedelta
-from src.PolygonS3Access import PolygonS3Access
+
+from polygon.PolygonS3Access import PolygonS3Access
+
 
 def test_get_date_from_key():
     key = "us_stocks_sip/day_aggs_v1/2023/03/2023-03-15.csv.gz"

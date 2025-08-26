@@ -1,5 +1,7 @@
 import pytest
-from src.Utils import Utils
+
+from helper.Utils import Utils
+
 
 class DummyClass:
     class_var = 42
