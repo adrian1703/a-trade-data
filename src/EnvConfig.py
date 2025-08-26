@@ -13,3 +13,7 @@ class EnvConfig:
         self.__load_env()
         self.aws_access_key_id: str = os.getenv("aws_access_key_id")
         self.aws_secret_access_key: str = os.getenv("aws_secret_access_key")
+        self.data_dir: str = os.getenv("data_dir")
+        assert self.aws_access_key_id is not None
+        assert self.aws_secret_access_key is not None
+        assert self.data_dir is not None
