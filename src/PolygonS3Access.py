@@ -13,7 +13,7 @@ class PolygonS3Access:
     _day_agg_kind = "day_aggs_v1"
     _minute_agg_kind = "minute_aggs_v1"
 
-    def __init__(self):
+    def __init__(self, data_dir: str = './../data/'):
         self.__session = boto3.Session(
             aws_access_key_id=self.__env_config.aws_access_key_id,
             aws_secret_access_key=self.__env_config.aws_secret_access_key,
@@ -25,7 +25,7 @@ class PolygonS3Access:
         )
         self.s3pages = []
         self.years_filter = 5
-        self.data_dir = './../data/'
+        self.data_dir = data_dir
         self._day_agg_dir = self.data_dir + self._day_agg_kind + '/'
         self._minute_agg_dir = self.data_dir + self._minute_agg_kind + '/'
         for dir_to_create in [self.data_dir, self._day_agg_dir, self._minute_agg_dir]:
