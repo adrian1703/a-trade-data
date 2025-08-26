@@ -122,7 +122,7 @@ class PolygonS3Access:
 
     def _download_missing_agg(self, func_get_all_keys, kind: str, download_dir: str, dry_run: bool = False):
         known_keys = func_get_all_keys()
-        present_files = [f for f in os.listdir(self._day_agg_dir) if f.endswith('.gz')]
+        present_files = [f for f in os.listdir(download_dir) if f.endswith('.gz')]
         present_keys = [self._full_filename_to_key(f, kind=kind) for f in present_files]
         missing_keys = list(set(known_keys) - set(present_keys))
         missing_keys.sort()
