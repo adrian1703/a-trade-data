@@ -32,11 +32,11 @@ class PolygonS3Access:
             os.makedirs(dir_to_create, exist_ok=True)
 
     def save_data(self):
-        with open('./cache/s3pages.pkl', 'wb') as f:
+        with open(self.data_dir + 'cache/s3pages.pkl', 'wb') as f:
             pickle.dump(self.s3pages, f)
 
     def load_data(self):
-        with open('./cache/s3pages.pkl', 'rb') as f:
+        with open(self.data_dir + 'cache/s3pages.pkl', 'rb') as f:
             self.s3pages = pickle.load(f)
     
     def fetch_pages(self, prefix: str = 'us_stocks_sip'):
