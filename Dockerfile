@@ -11,4 +11,4 @@ RUN pip install --upgrade pip && \
 
 COPY ./app ./app
 
-CMD ["python", "app/main.py"]
+CMD ["python", "-u", "app/main.py"]
