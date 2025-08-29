@@ -1,7 +1,7 @@
 import pytest
 from datetime import date, timedelta
 
-from polygon.PolygonS3Access import PolygonS3Access
+from app.polygon.PolygonS3Access import PolygonS3Access
 
 
 def test_get_date_from_key():

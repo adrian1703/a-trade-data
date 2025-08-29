@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from helper.EnvConfig import EnvConfig
+from app.helper.EnvConfig import EnvConfig
 
 
 class EnvConfigTest(EnvConfig):

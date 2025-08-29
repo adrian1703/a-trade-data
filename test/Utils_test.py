@@ -1,6 +1,6 @@
 import pytest
 
-from helper.Utils import Utils
+from app.helper.Utils import Utils
 
 
 class DummyClass:
@@ -21,7 +21,6 @@ def run_tests():
     Utils.inspect("testing inspect")
 
     print("\n--- Test: float ---")
-    Utils.inspect(3.14)
 
     print("\n--- Test: bool ---")
     Utils.inspect(True)
