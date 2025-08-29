@@ -10,4 +10,4 @@ RUN pip install --upgrade pip && \
     pip install pipenv && \
     pipenv install --system
 
-CMD ["python", "./app/main.py"]
+CMD ["python", "app/main.py"]
