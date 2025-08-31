@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCHEMA_LOC="$SCRIPT_DIR/../a-trade-shared-resources"
+SCHEMA_LOC="$SCRIPT_DIR/a-trade-shared-resources"
 TARGET_LOC="$SCRIPT_DIR/app/generated"
 
 rm -r "$TARGET_LOC" &> /dev/null
