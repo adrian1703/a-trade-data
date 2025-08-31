@@ -1,0 +1,3 @@
+[submodule "a-trade-shared-resources"]
+	path = a-trade-shared-resources
+	url = git@github.com:adrian1703/a-trade-shared-resources.git
