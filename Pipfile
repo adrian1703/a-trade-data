@@ -8,6 +8,9 @@ boto3 = "*"
 python-dotenv = "*"
 pytest = "*"
 avro = "*"
+flask = "*"
+flask-testing = "*"
+connexion = "<3.0"
 
 [dev-packages]
 

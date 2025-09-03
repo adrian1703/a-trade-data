@@ -2,3 +2,5 @@
 *.pkl
 *.gz
 generated
+openapi
+/openapi_server/
