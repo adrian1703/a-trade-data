@@ -38,7 +38,7 @@ class PolygonS3Access:
     def load_data(self):
         with open(self.data_dir + 'cache/s3pages.pkl', 'rb') as f:
             self.s3pages = pickle.load(f)
-    
+
     def fetch_pages(self, prefix: str = 'us_stocks_sip'):
         paginator = self.__s3.get_paginator('list_objects_v2')
         for page in paginator.paginate(Bucket='flatfiles', Prefix=prefix):
@@ -50,16 +50,16 @@ class PolygonS3Access:
                 print(obj['Key'])
 
     def download_missing_day_agg(self, dry_run: bool = False):
-        self._download_missing_agg(self.get_day_agg_keys,
-                                   self._day_agg_kind,
-                                   self._day_agg_dir,
-                                   dry_run)
+        return self._download_missing_agg(self.get_day_agg_keys,
+                                          self._day_agg_kind,
+                                          self._day_agg_dir,
+                                          dry_run)
 
     def download_missing_minute_agg(self, dry_run: bool = False):
-        self._download_missing_agg(self.get_minute_agg_keys,
-                                   self._minute_agg_kind,
-                                   self._minute_agg_dir,
-                                   dry_run)
+        return self._download_missing_agg(self.get_minute_agg_keys,
+                                          self._minute_agg_kind,
+                                          self._minute_agg_dir,
+                                          dry_run)
 
     def download(self, object_key: str, directory: str = './'):
         if directory[-1] != '/':
@@ -74,11 +74,9 @@ class PolygonS3Access:
     def get_minute_agg_keys(self):
         return self._get_keys_of_kind(self._minute_agg_kind)
 
-
     @staticmethod
     def get_date_from_key(key):
         return key.split("/")[4].split(".")[0]
-
 
     @staticmethod
     def key_is_within_given_years(key_to_check, years):
@@ -121,6 +119,7 @@ class PolygonS3Access:
         return result
 
     def _download_missing_agg(self, func_get_all_keys, kind: str, download_dir: str, dry_run: bool = False):
+        result_count = 0
         known_keys = func_get_all_keys()
         present_files = [f for f in os.listdir(download_dir) if f.endswith('.gz')]
         present_keys = [self._full_filename_to_key(f, kind=kind) for f in present_files]
@@ -129,5 +128,7 @@ class PolygonS3Access:
 
         for idx, agg in enumerate(missing_keys, 1):
             print(f"Downloading entry {idx}/{len(missing_keys)}: {agg}")
+            result_count += 1
             if not dry_run:
                 self.download(agg, download_dir)
+        return result_count
