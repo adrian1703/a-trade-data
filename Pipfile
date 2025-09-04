@@ -11,6 +11,8 @@ avro = "*"
 flask = "*"
 flask-testing = "*"
 connexion = "<3.0"
+confluent-kafka = "*"
+orjson = "*"
 
 [dev-packages]
 

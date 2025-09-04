@@ -16,9 +16,9 @@ from app.helper.EnvConfig import EnvConfig
 #   - download_missing_minute_agg
 
 class PolygonS3Access:
-    __env_config: EnvConfig = EnvConfig()
-    _day_agg_kind = "day_aggs_v1"
-    _minute_agg_kind = "minute_aggs_v1"
+    __env_config : EnvConfig = EnvConfig()
+    _day_agg_kind = __env_config.day_agg_kind
+    _minute_agg_kind = __env_config.minute_agg_kind
 
     def __init__(self, data_dir: str = './../data/'):
         self.__session = boto3.Session(
@@ -33,8 +33,8 @@ class PolygonS3Access:
         self.s3pages = []
         self.years_filter = 5
         self.data_dir = self.__env_config.data_dir
-        self._day_agg_dir = self.data_dir + self._day_agg_kind + '/'
-        self._minute_agg_dir = self.data_dir + self._minute_agg_kind + '/'
+        self._day_agg_dir = self.__env_config.day_agg_dir
+        self._minute_agg_dir = self.__env_config.minute_agg_dir
         for dir_to_create in [self.data_dir, self._day_agg_dir, self._minute_agg_dir]:
             os.makedirs(dir_to_create, exist_ok=True)
 
@@ -99,7 +99,7 @@ class PolygonS3Access:
         return check_date >= threshold
 
     @staticmethod
-    def _full_filename_to_key(filename: str, kind: str):
+    def _full_filename_to_s3key(filename: str, kind: str):
         filename = filename.split("/")[-1]
         year = filename.split("-")[0]
         month = filename.split("-")[1]
@@ -129,7 +129,7 @@ class PolygonS3Access:
         result_count = 0
         known_keys = func_get_all_keys()
         present_files = [f for f in os.listdir(download_dir) if f.endswith('.gz')]
-        present_keys = [self._full_filename_to_key(f, kind=kind) for f in present_files]
+        present_keys = [self._full_filename_to_s3key(f, kind=kind) for f in present_files]
         missing_keys = list(set(known_keys) - set(present_keys))
         missing_keys.sort()
 

@@ -11,7 +11,7 @@ def test_get_date_from_key():
 def test_full_filename_to_key():
     filename = "2023-07-01.csv.gz"
     kind = "minute_aggs_v1"
-    key = PolygonS3Access._full_filename_to_key(filename, kind)
+    key = PolygonS3Access._full_filename_to_s3key(filename, kind)
     assert key == "us_stocks_sip/minute_aggs_v1/2023/07/2023-07-01.csv.gz"
 
 def test_key_is_within_given_years_recent():

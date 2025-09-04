@@ -1,19 +1,14 @@
 import logging
-import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
-
-from flask import current_app
 
 from app.polygon.PolygonS3Access import PolygonS3Access
-from openapi_server import util
+from app.publisher.KafkaRootPublisher import KafkaRootPublisher
 from openapi_server.models import FetchAggregateDataResult
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 polygon_s3_access = PolygonS3Access()
+kafka_root_publisher = KafkaRootPublisher()
 
 
 def v1_fetch_aggregate_data_post():  # noqa: E501
@@ -35,7 +30,6 @@ def v1_fetch_aggregate_data_post():  # noqa: E501
     logger.info("Minute aggregates downloaded: %d", min_agg_downloaded)
 
     logger.info("Fetching aggregate data: finished process")
-
     return FetchAggregateDataResult(
         pages_fetched=pages_fetched,
         day_agg_downloaded=day_agg_downloaded,
@@ -51,4 +45,21 @@ def v1_publish_aggregate_data_post():  # noqa: E501
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     logger.info("Publish aggregate data called")
-    return 'do my magic!'
+    kafka_root_publisher.publish_day_agg()
+    kafka_root_publisher.publish_minute_agg()
+    return 'Data published!'
+
+
+def v1_purge_aggregate_data_post():  # noqa: E501
+    """Purge published data to Kafka
+
+     # noqa: E501
+
+
+    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    """
+    logger.info("Purging aggregate data: starting process")
+    kafka_root_publisher.purge_day_agg()
+    kafka_root_publisher.purge_minute_agg()
+    logger.info("Purging aggregate data: finished process")
+    return 'Data purged!'

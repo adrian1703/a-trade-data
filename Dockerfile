@@ -11,6 +11,7 @@ RUN pip install --upgrade pip && \
 
 COPY ./app ./app
 COPY ./openapi_server ./openapi_server
+COPY ./a-trade-shared-resources ./a-trade-shared-resources
 
 ENV PYTHONPATH=.
 
