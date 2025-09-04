@@ -10,5 +10,8 @@ RUN pip install --upgrade pip && \
     pipenv install --system
 
 COPY ./app ./app
+COPY ./openapi_server ./openapi_server
 
-CMD ["python", "-u", "app/main.py"]
+ENV PYTHONPATH=.
+
+CMD ["python", "-u", "app/__main__.py"]

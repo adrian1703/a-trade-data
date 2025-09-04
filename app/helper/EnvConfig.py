@@ -7,7 +7,7 @@ class EnvConfig:
 
     @staticmethod
     def __load_env():
-        load_dotenv(find_dotenv())
+        load_dotenv(find_dotenv(".env"))
 
     def __init__(self):
         self.__load_env()
