@@ -41,13 +41,9 @@ class PolygonS3Access:
 
     def fetch_pages(self, prefix: str = 'us_stocks_sip'):
         paginator = self.__s3.get_paginator('list_objects_v2')
+        self.s3pages = []
         for page in paginator.paginate(Bucket='flatfiles', Prefix=prefix):
             self.s3pages.append(page)
-
-    def print_pages(self):
-        for page in self.s3pages:
-            for obj in page['Contents']:
-                print(obj['Key'])
 
     def download_missing_day_agg(self, dry_run: bool = False):
         return self._download_missing_agg(self.get_day_agg_keys,
