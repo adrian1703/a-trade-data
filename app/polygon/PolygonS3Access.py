@@ -7,6 +7,13 @@ from botocore.config import Config
 
 from app.helper.EnvConfig import EnvConfig
 
+# Intended Workflow
+# Load data
+#   1. From Cache - load_data
+#   2. From Api - fetch_pages
+# Download missing aggregates
+#   - download_missing_day_agg
+#   - download_missing_minute_agg
 
 class PolygonS3Access:
     __env_config: EnvConfig = EnvConfig()
@@ -40,10 +47,13 @@ class PolygonS3Access:
             self.s3pages = pickle.load(f)
 
     def fetch_pages(self, prefix: str = 'us_stocks_sip'):
+        result_count = 0
         paginator = self.__s3.get_paginator('list_objects_v2')
         self.s3pages = []
         for page in paginator.paginate(Bucket='flatfiles', Prefix=prefix):
+            result_count += 1
             self.s3pages.append(page)
+        return result_count
 
     def download_missing_day_agg(self, dry_run: bool = False):
         return self._download_missing_agg(self.get_day_agg_keys,
@@ -70,13 +80,14 @@ class PolygonS3Access:
     def get_minute_agg_keys(self):
         return self._get_keys_of_kind(self._minute_agg_kind)
 
+    ##################################################### Private #####################################################
     @staticmethod
-    def get_date_from_key(key):
+    def _get_date_from_key(key):
         return key.split("/")[4].split(".")[0]
 
     @staticmethod
-    def key_is_within_given_years(key_to_check, years):
-        date_to_check = PolygonS3Access.get_date_from_key(key_to_check)
+    def _key_is_within_given_years(key_to_check, years):
+        date_to_check = PolygonS3Access._get_date_from_key(key_to_check)
         today = date.today() - timedelta(days=1)
         # Compute the threshold date
         try:
@@ -108,7 +119,7 @@ class PolygonS3Access:
 
     def _get_keys_of_kind(self, kind: str):
         filter_kind = lambda key: kind in key
-        filter_5_years = lambda key: PolygonS3Access.key_is_within_given_years(key, self.years_filter)
+        filter_5_years = lambda key: PolygonS3Access._key_is_within_given_years(key, self.years_filter)
         result = list(self._get_all_keys())
         result = list(filter(filter_kind, result))
         result = list(filter(filter_5_years, result))

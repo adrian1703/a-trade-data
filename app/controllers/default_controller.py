@@ -1,9 +1,19 @@
+import logging
 import connexion
 from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from flask import current_app
+
+from app.polygon.PolygonS3Access import PolygonS3Access
 from openapi_server import util
+from openapi_server.models import FetchAggregateDataResult
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+polygon_s3_access = PolygonS3Access()
 
 
 def v1_fetch_aggregate_data_post():  # noqa: E501
@@ -11,10 +21,26 @@ def v1_fetch_aggregate_data_post():  # noqa: E501
 
      # noqa: E501
 
-
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    :rtype: Union[FetchAggregateDataResult, Tuple[FetchAggregateDataResult, int], Tuple[FetchAggregateDataResult, int, Dict[str, str]]
     """
-    return 'do my magic!'
+    logger.info("Fetching aggregate data: starting process")
+
+    pages_fetched = polygon_s3_access.fetch_pages()
+    logger.info("Pages fetched: %d", pages_fetched)
+
+    day_agg_downloaded = polygon_s3_access.download_missing_day_agg()
+    logger.info("Day aggregates downloaded: %d", day_agg_downloaded)
+
+    min_agg_downloaded = polygon_s3_access.download_missing_minute_agg()
+    logger.info("Minute aggregates downloaded: %d", min_agg_downloaded)
+
+    logger.info("Fetching aggregate data: finished process")
+
+    return FetchAggregateDataResult(
+        pages_fetched=pages_fetched,
+        day_agg_downloaded=day_agg_downloaded,
+        min_agg_downloaded=min_agg_downloaded
+    )
 
 
 def v1_publish_aggregate_data_post():  # noqa: E501
@@ -22,7 +48,7 @@ def v1_publish_aggregate_data_post():  # noqa: E501
 
      # noqa: E501
 
-
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
+    logger.info("Publish aggregate data called")
     return 'do my magic!'
