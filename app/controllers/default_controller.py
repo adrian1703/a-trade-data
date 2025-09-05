@@ -52,9 +52,9 @@ def v1_publish_aggregate_data_post(mode):  # noqa: E501
         case "all":
             kafka_root_publisher.publish_day_agg()
             kafka_root_publisher.publish_minute_agg()
-        case "day_aggs":
+        case "day_agg":
             kafka_root_publisher.publish_day_agg()
-        case "minute_aggs":
+        case "minute_agg":
             kafka_root_publisher.publish_minute_agg()
         case _:
             raise ValueError(f"Unsupported mode: {mode}")
