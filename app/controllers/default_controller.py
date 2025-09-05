@@ -37,29 +37,50 @@ def v1_fetch_aggregate_data_post():  # noqa: E501
     )
 
 
-def v1_publish_aggregate_data_post():  # noqa: E501
+def v1_publish_aggregate_data_post(mode):  # noqa: E501
     """Publish aggregate data to Kafka
 
      # noqa: E501
 
+    :param mode: Determines which aggregate data to publish
+    :type mode: str
+
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     logger.info("Publish aggregate data called")
-    kafka_root_publisher.publish_day_agg()
-    kafka_root_publisher.publish_minute_agg()
+    match mode:
+        case "all":
+            kafka_root_publisher.publish_day_agg()
+            kafka_root_publisher.publish_minute_agg()
+        case "day_aggs":
+            kafka_root_publisher.publish_day_agg()
+        case "minute_aggs":
+            kafka_root_publisher.publish_minute_agg()
+        case _:
+            raise ValueError(f"Unsupported mode: {mode}")
     return 'Data published!'
 
 
-def v1_purge_aggregate_data_post():  # noqa: E501
+def v1_purge_aggregate_data_post(mode):  # noqa: E501
     """Purge published data to Kafka
 
      # noqa: E501
 
+    :param mode: Determines which aggregate data to purge
+    :type mode: str
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
     logger.info("Purging aggregate data: starting process")
-    kafka_root_publisher.purge_day_agg()
-    kafka_root_publisher.purge_minute_agg()
+    match mode:
+        case "all":
+            kafka_root_publisher.purge_day_agg()
+            kafka_root_publisher.purge_minute_agg()
+        case "day_agg":
+            kafka_root_publisher.purge_day_agg()
+        case "minute_agg":
+            kafka_root_publisher.purge_minute_agg()
+        case _:
+            raise ValueError(f"Unsupported mode: {mode}")
     logger.info("Purging aggregate data: finished process")
     return 'Data purged!'
