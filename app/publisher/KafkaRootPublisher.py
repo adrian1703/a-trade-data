@@ -114,5 +114,11 @@ class KafkaRootPublisher:
 
     def _publish_aggregates(self, topic: str, aggs: list[StockAggregate]):
         for agg in aggs:
-            self.producer.produce(topic=topic, value=agg.dict())
+            while True:
+                try:
+                    self.producer.produce(topic=topic, value=agg.dict())
+                    break
+                except BufferError:
+                    # queue is full, wait for some deliveries to complete
+                    self.producer.poll(0.5)
         self.producer.flush()
