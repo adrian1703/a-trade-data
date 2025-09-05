@@ -46,7 +46,7 @@ def _transform_csvgz_to_StockAggregate(full_file_path: str) -> list[StockAggrega
     with gzip.open(full_file_path, "rt", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            row["timestamp"] = int(row["window_start"])
+            row["window_start"] = int(row["window_start"])
             row["open"] = float(row["open"])
             row["high"] = float(row["high"])
             row["low"] = float(row["low"])

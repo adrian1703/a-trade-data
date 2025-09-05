@@ -5,7 +5,7 @@ from app.publisher.KafkaRootPublisher import _get_list_files, _transform_csvgz_t
 
 
 class TestKafkaRootPublisher(unittest.TestCase):
-    current_dir = os.path.join(os.getcwd(), "test")  # should be /test folder
+    current_dir = abs_path = os.path.dirname(os.path.abspath(__file__))  # should be /test folder
     test_file = "2020-08-24.csv.gz"
     test_file_full_path = [os.path.join(current_dir, test_file)]
 
