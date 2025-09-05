@@ -4,3 +4,4 @@
 generated
 openapi
 /openapi_server/
+!test/2020-08-24.csv.gz
